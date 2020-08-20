@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: API de Mythical Mysfits con Auto Scaling Groups.
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      "AmiId": "ami-09d95fab7fff3776c"
+    us-east-2:
+      "AmiId": "ami-026dea5602e368e96"
+    us-west-2:
+      "AmiId": "ami-0e34e7b9ca0ace12d"
+
+Resources:
+  LoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: MythicalMysfitsLB
+      GroupDescription: Load Balancer
+      # Ingress rules
+  InstanceSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: MythicalMysfitsInstance
+      GroupDescription: Instances
+      # Ingress rules
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      SecurityGroups:
+        - !GetAtt LoadBalancerSG.GroupId
+      AvailabilityZones: !GetAZs
+      # Listeners
+      # HealthCheck
+  LaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: !FindInMap
+        - RegionMap
+        - !Ref AWS::Region
+        - AmiId
+      InstanceType: t2.micro
+      KeyName: mythical-mysfits
+      SecurityGroups:
+        - !GetAtt InstanceSG.GroupId
+      # UserData
+  # AutoScalingGroup:
