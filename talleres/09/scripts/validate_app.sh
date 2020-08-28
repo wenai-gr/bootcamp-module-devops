@@ -1,2 +1,2 @@
 #!/bin/bash
-curl localhost:8000
+curl localhost:8001
