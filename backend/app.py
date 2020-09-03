@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, json, Response, request
 from flask_cors import CORS
+import stressypy
 
 # A very basic API created using Flask that has two possible routes for requests.
 
@@ -29,3 +30,13 @@ def getMysfits():
     response.headers["Content-Type"] = "application/json"
 
     return response
+
+@app.route("/error")
+def error():
+    raise Exception('error endpoint')
+
+@app.route("/load")
+def load():
+    load_job = stressypy.create_job(1, 10)
+    load_job.run()
+    return jsonify({"message": "Load delivered"})
